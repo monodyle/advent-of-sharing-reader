@@ -1,0 +1,55 @@
+---
+import type { GetStaticPathsResult } from "astro";
+import { getPosts, getPost } from "../lib/content";
+import Layout from "../layouts/Layout.astro";
+
+export async function getStaticPaths(): Promise<GetStaticPathsResult> {
+  const entries = await getPosts();
+  const staticPaths = [];
+
+  for (const entry of entries) {
+    for (const post of entry.entries) {
+      staticPaths.push({ params: { slug: post.path } });
+    }
+  }
+
+  return staticPaths;
+}
+
+export const prerender = true;
+
+Astro.locals.cache(86400);
+const { slug } = Astro.params;
+
+const content = await getPost(slug as string);
+if (!content) {
+  throw new Error("Invalid path");
+}
+
+const {
+  title = "Advent of Sharing",
+  author = "TBU",
+  date,
+} = (content.data.matter as Record<string, string>) ?? {};
+---
+
+<Layout title={title} description={author}>
+  <article class="space-y-6">
+    <a href="/" class="font-mono font-semibold text-sm">← Back</a>
+    <header>
+      <h1 class="font-semibold text-lg font-mono">{title}</h1>
+      <div class="flex items-center gap-2">
+        <p class="text-sm font-mono">
+          Author: {author}
+        </p>
+        <span class="select-none">・</span>
+        <p class="text-sm font-mono">
+          {date ? `Date: ${date}` : ""}
+        </p>
+      </div>
+    </header>
+    <section class="prose">
+      <Fragment set:html={content} />
+    </section>
+  </div>
+</Layout>

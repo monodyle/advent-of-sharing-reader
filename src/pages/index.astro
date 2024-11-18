@@ -1,16 +1,46 @@
 ---
+import Layout from "../layouts/Layout.astro";
+import { getPosts } from "../lib/content";
 
+const data = await getPosts();
+
+Astro.locals.cache(86400);
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout
+  title="Advent of Sharing"
+  description="Yearly knowledge sharing event about everything, organized by the WeBuild Community."
+>
+  <header class="max-w-xl space-y-2 mb-6">
+    <h1 class="font-semibold font-mono">🎄 Advent Of Sharing</h1>
+    <p class="text-sm font-mono text-balance">
+      Yearly knowledge sharing event about everything, organized by the WeBuild
+      Community.
+    </p>
+  </header>
+  <div class="space-y-6">
+    {
+      data.map((folder) => (
+        <div class="space-y-2">
+          <h3 class="font-mono font-semibold">{folder.year}</h3>
+          {folder.entries.map((entry) => {
+            const matter = entry.data?.data.matter as { [key: string]: string };
+            const title = "title" in matter ? matter.title : "";
+            const author = "author" in matter ? matter.author : "TBU";
+
+            return (
+              <a href={entry.path} class="block">
+                <p>{title || <span class="italic">Uknown title</span>}</p>
+                <p class="flex items-center gap-2 text-xs text-stone-500">
+                  <span>{author}</span>
+                  <span class="select-none">・</span>
+                  <span>/{entry.path}</span>
+                </p>
+              </a>
+            );
+          })}
+        </div>
+      ))
+    }
+  </div>
+</Layout>
