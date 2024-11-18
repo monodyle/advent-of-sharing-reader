@@ -2,9 +2,9 @@
 import Layout from "../layouts/Layout.astro";
 import { getPosts } from "../lib/content";
 
-const data = await getPosts();
-
 Astro.locals.cache(86400);
+
+const data = await getPosts();
 ---
 
 <Layout
