@@ -8,7 +8,7 @@ import cloudflare from '@astrojs/cloudflare';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'http://localhost:4321',
+  site: 'https://webuild.takea.cafe',
   output: 'hybrid',
   integrations: [tailwind(), sitemap(), mdx()],
   adapter: cloudflare()

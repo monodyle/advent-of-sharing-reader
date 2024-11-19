@@ -10,6 +10,7 @@ export async function getStaticPaths(): Promise<GetStaticPathsResult> {
   for (const entry of entries) {
     for (const post of entry.entries) {
       staticPaths.push({ params: { slug: post.path } });
+      staticPaths.push({ params: { slug: `${post.path}.md` } });
     }
   }
 
@@ -22,7 +23,7 @@ Astro.locals.cache(86400);
 
 const { slug } = Astro.params;
 
-const content = await getPost(slug as string);
+const content = await getPost((slug as string).replace(/\.md$/, ''));
 if (!content) {
   throw new Error("Invalid path");
 }
